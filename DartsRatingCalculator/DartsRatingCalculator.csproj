@@ -138,6 +138,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Database\Stored Procedures\InsertMatchHeader.sql" />
     <Content Include="Database\Stored Procedures\InsertNewSquad.sql" />
     <Content Include="Database\Stored Procedures\InsertNewPlayer.sql" />
     <Content Include="Database\Stored Procedures\UpdateSquadInfo.sql" />

@@ -46,7 +46,7 @@ namespace DartsRatingCalculator
             
         }
 
-        internal static void InsertNewPlayer(int playerId, string playerName, int teamId)
+        public static void InsertNewPlayer(int playerId, string playerName, int teamId)
         {
             SqlConnection connSql = new SqlConnection(Properties.Settings.Default.ConnectionString);
             connSql.Open();

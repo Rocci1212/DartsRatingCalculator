@@ -142,6 +142,15 @@ namespace DartsRatingCalculator.Utility
 
             var teamMatchDoc = new HtmlAgilityPack.HtmlDocument();
             teamMatchDoc.LoadHtml(doc.DocumentNode.SelectSingleNode("//table[@id='team_match_table']").OuterHtml);
+
+            foreach (var m in teamMatchDoc.DocumentNode.SelectNodes("//a"))
+            {
+                var z = m.Attributes["href"].Value;
+                var thereShouldBeSomethingAfterZ = Convert.ToInt32(z.Substring(z.LastIndexOf('=') + 1));
+                var a = m.InnerHtml;
+
+                Match.InsertMatchHeader(thereShouldBeSomethingAfterZ, a, teamId);
+            }
         }
 
         public static void FarmMatchPage(string url)

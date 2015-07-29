@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,6 +22,22 @@ namespace DartsRatingCalculator
             WeekNumber = Convert.ToInt32(squadDesc.Substring(5, squadDesc.IndexOf(":") - 5));
             _Campaign = Campaign.GetCampaignFromDesc(campaignDesc);
             Squad.GetSquadsFromDesc(squadDesc, _Campaign, ref AwaySquad, ref HomeSquad);
+        }
+
+        public static void InsertMatchHeader(int matchId, string weekNumber, int teamId)
+        {
+            SqlConnection connSql = new SqlConnection(Properties.Settings.Default.ConnectionString);
+            connSql.Open();
+
+            SqlCommand cmdSql = new SqlCommand("InsertMatchHeader", connSql);
+            cmdSql.CommandType = System.Data.CommandType.StoredProcedure;
+            cmdSql.Parameters.AddWithValue("@MatchId", matchId);
+            cmdSql.Parameters.AddWithValue("@WeekNumber", weekNumber);
+            cmdSql.Parameters.AddWithValue("@SquadId", teamId);
+
+            cmdSql.ExecuteNonQuery();
+
+            connSql.Close();
         }
     }
 }
