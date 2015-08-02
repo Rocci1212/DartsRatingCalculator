@@ -21,7 +21,8 @@ namespace DartsRatingCalculator
 
         private void button1_Click(object sender, EventArgs e)
         {
-            Utility.FarmingFunctions.FarmTeamPage(6246);
+            Utility.FarmingFunctions.FarmTeamPage(6243);
+            Utility.FarmingFunctions.FarmMatchPage("http://stats.mmdl.org/index.php?view=match&matchid=35960");
         }
     }
 }

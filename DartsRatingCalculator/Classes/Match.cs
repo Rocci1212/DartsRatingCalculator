@@ -10,11 +10,11 @@ namespace DartsRatingCalculator
     public class Match
     {
         // for example http://stats.mmdl.org/index.php?view=match&matchid=36527 would have a match id of 36527
-        int MatchId;
-        int WeekNumber;
-        Squad AwaySquad, HomeSquad;
-        Campaign _Campaign;
-        Game[] Games;
+        public int MatchId;
+        public int WeekNumber;
+        public Squad AwaySquad, HomeSquad;
+        public Campaign _Campaign;
+        public Game[] Games;
 
         public Match(string matchDesc, string squadDesc, string campaignDesc)
         {

@@ -27,5 +27,10 @@ namespace DartsRatingCalculator
         {
             _GameType = gameType;
         }
+
+        public static void InsertNewGame()
+        {
+
+        }
     }
 }

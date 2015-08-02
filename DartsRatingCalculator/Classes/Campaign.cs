@@ -33,7 +33,7 @@ namespace DartsRatingCalculator
 
     public class Campaign
     {
-        int id; // autonumber
+        public int id; // autonumber
         public Season _Season;
         public int Year;
         public Class _Class;

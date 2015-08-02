@@ -11,12 +11,17 @@ namespace DartsRatingCalculator
     {
         // for example, http://stats.mmdl.org/index.php?view=team&teamid=6246 would have a squad id of 6246
         int SquadId;
-        string Name, Sponsor, Location;
+        string Name, Sponsor, City;
         Campaign _Campaign;
         DartsPlayer[] DartsPlayers;
 
         public static void GetSquadsFromDesc(string squadDesc, Campaign campaign, ref Squad awaySquad, ref Squad homeSquad)
         {
+            SqlConnection connSql = new SqlConnection(Properties.Settings.Default.ConnectionString);
+            connSql.Open();
+
+            squadDesc = squadDesc.Substring(squadDesc.IndexOf(":") + 1).Trim();
+
             string[] x = squadDesc.Split(new string[] { " at " }, StringSplitOptions.None);
             if (x.Length < 2)
                 throw (new InvalidOperationException());
@@ -24,8 +29,57 @@ namespace DartsRatingCalculator
                 throw (new NotImplementedException());
             if (x.Length == 2)
             {
-                // look up the squads by name from the database
+                SqlCommand cmdSql = new SqlCommand("select * from squad where name = @name and campaign = @campaign", connSql);
+
+                cmdSql.Parameters.AddWithValue("@name", x[0]);
+                cmdSql.Parameters.AddWithValue("@campaign", campaign.id);
+
+                using (SqlDataReader rReader = cmdSql.ExecuteReader())
+                {
+                    if (rReader.Read())
+                    {
+                        awaySquad = new Squad();
+                        awaySquad.SquadId = Convert.ToInt32(rReader["Id"]);
+                        awaySquad.Name = Convert.ToString(rReader["Name"]);
+                        awaySquad.Sponsor = Convert.ToString(rReader["Sponsor"]);
+                        awaySquad.City = Convert.ToString(rReader["City"]);
+                        awaySquad._Campaign = campaign;
+                    }
+                    else
+                        throw new Exception("Away Squad not found!");
+                }
+
+                cmdSql = new SqlCommand("select * from squad where name = @name and campaign = @campaign", connSql);
+
+                cmdSql.Parameters.AddWithValue("@name", x[1]);
+                cmdSql.Parameters.AddWithValue("@campaign", campaign.id);
+
+                using (SqlDataReader rReader = cmdSql.ExecuteReader())
+                {
+                    if (rReader.Read())
+                    {
+                        homeSquad = new Squad();
+                        homeSquad.SquadId = Convert.ToInt32(rReader["Id"]);
+                        homeSquad.Name = Convert.ToString(rReader["Name"]);
+                        homeSquad.Sponsor = Convert.ToString(rReader["Sponsor"]);
+                        homeSquad.City = Convert.ToString(rReader["City"]);
+                        homeSquad._Campaign = campaign;
+                    }
+                    else
+                        throw new Exception("Home Squad not found!");
+                }
+
             }
+
+            connSql.Close();
+        }
+
+        public DartsPlayer GetPlayerByName(string name)
+        {
+            // TODO return a player
+            DartsPlayer player = new DartsPlayer(0);
+
+            return player;
         }
 
         public static void InsertNewSquad(int squadId, int campaignId)

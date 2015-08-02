@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -78,23 +79,23 @@ namespace DartsRatingCalculator.Utility
                 }
 
                 int j = Campaign.GetNewOrExistingCampaignId(ref campaignToCreate);
-                FarmTeams(standingsTables[i].OuterHtml, j);
+                FarmSquad(standingsTables[i].OuterHtml, j);
             }
         }
 
-        public static void FarmTeams(string webpageText, int campaignId)
+        public static void FarmSquad(string webpageText, int campaignId)
         {
             var doc = new HtmlAgilityPack.HtmlDocument();
             doc.LoadHtml(webpageText);
 
-            var x = doc.DocumentNode.SelectNodes("//a");
+            var squadLinks = doc.DocumentNode.SelectNodes("//a");
 
-            foreach (var y in x)
+            foreach (var link in squadLinks)
             {
-                var z = y.Attributes["href"].Value;
-                var thereShouldBeSomethingAfterZ = Convert.ToInt32(z.Substring(z.LastIndexOf('=') + 1));
+                var squadPage = link.Attributes["href"].Value;
+                var squadId = Convert.ToInt32(squadPage.Substring(squadPage.LastIndexOf('=') + 1));
 
-                Squad.InsertNewSquad(thereShouldBeSomethingAfterZ, campaignId);
+                Squad.InsertNewSquad(squadId, campaignId);
             }
         }
 
@@ -104,8 +105,8 @@ namespace DartsRatingCalculator.Utility
             WebRequest webRequest = WebRequest.Create(url);
             WebResponse webResponse = webRequest.GetResponse();
             Stream responseStream = webResponse.GetResponseStream();
-            StreamReader rReaader = new StreamReader(responseStream);
-            string sWebpageText = rReaader.ReadToEnd();
+            StreamReader rReader = new StreamReader(responseStream);
+            string sWebpageText = rReader.ReadToEnd();
 
             FarmSquadInfo(sWebpageText, teamId);
         }
@@ -123,20 +124,20 @@ namespace DartsRatingCalculator.Utility
             var teamInfo = doc.DocumentNode.SelectNodes("//p")[1].InnerHtml;
 
             var sponsor = teamInfo.Substring(0, teamInfo.LastIndexOf(','));
-            var location = teamInfo.Substring(teamInfo.LastIndexOf(',') + 1).Trim();
+            var city = teamInfo.Substring(teamInfo.LastIndexOf(',') + 1).Trim();
 
-            Squad.UpdateSquadInfo(teamId, teamName, sponsor, location);
+            Squad.UpdateSquadInfo(teamId, teamName, sponsor, city);
 
             var playerDoc = new HtmlAgilityPack.HtmlDocument();
             playerDoc.LoadHtml(doc.DocumentNode.SelectSingleNode("//div").OuterHtml);
 
-            foreach (var y in playerDoc.DocumentNode.SelectNodes("//a"))
+            foreach (var playerLink in playerDoc.DocumentNode.SelectNodes("//a"))
             {
-                var z = y.Attributes["href"].Value;
-                var thereShouldBeSomethingAfterZ = Convert.ToInt32(z.Substring(z.LastIndexOf('=') + 1));
-                var a = y.InnerHtml;
+                var z = playerLink.Attributes["href"].Value;
+                var playerId = Convert.ToInt32(z.Substring(z.LastIndexOf('=') + 1));
+                var playerName = playerLink.InnerHtml;
 
-                DartsPlayer.InsertNewPlayer(thereShouldBeSomethingAfterZ, a, teamId);
+                DartsPlayer.InsertNewPlayer(playerId, playerName, teamId);
                 //Squad.InsertNewSquad(thereShouldBeSomethingAfterZ, campaignId);
             }
 
@@ -156,7 +157,7 @@ namespace DartsRatingCalculator.Utility
         public static void FarmMatchPage(string url)
         {
             // get the webpage
-            WebRequest webRequest = WebRequest.Create("http://stats.mmdl.org/index.php?view=match&matchid=36527");
+            WebRequest webRequest = WebRequest.Create(url);
             WebResponse webResponse = webRequest.GetResponse();
             Stream responseStream = webResponse.GetResponseStream();
             StreamReader rReader = new StreamReader(responseStream);
@@ -171,42 +172,67 @@ namespace DartsRatingCalculator.Utility
             doc.LoadHtml(sWebpageText);
 
             // get the match number
-            var h3 = doc.DocumentNode.SelectNodes("//h3");
-            var matchDesc = h3[2].InnerHtml;
+            var h3nodes = doc.DocumentNode.SelectNodes("//h3");
+            var matchDesc = h3nodes[2].InnerHtml;
 
             // get the squads competing
-            var h4 = doc.DocumentNode.SelectNodes("//h4");
-            var squadDesc = h4[0].InnerHtml;
+            var h4nodes = doc.DocumentNode.SelectNodes("//h4");
+            var squadDesc = h4nodes[0].InnerHtml;
 
             // i am such a fucking hack
-            var em = doc.DocumentNode.SelectNodes("//em");
-            var campaignDesc = em[0].InnerHtml;
+            var emNodes = doc.DocumentNode.SelectNodes("//em");
+            var campaignDesc = emNodes[0].InnerHtml;
 
-            Match y = new Match(matchDesc, squadDesc, campaignDesc);
+            Match match = new Match(matchDesc, squadDesc, campaignDesc);
 
             // get the match table html
             var docMatchTable = doc.DocumentNode.SelectSingleNode("//table[@id='match_table']");
             doc.LoadHtml(docMatchTable.OuterHtml);
 
             var tableRows = docMatchTable.SelectNodes("//tr");
-            //int i = 0;
+            string gameType;
+            int? gameNumber = null;
+            bool isHomeWin;
+            DartsPlayer awayPlayer, homePlayer;
+
             for (int i = 0; i < tableRows.ToList<HtmlAgilityPack.HtmlNode>().Count; i++)
             {
                 if (tableRows[i].FirstChild.Name == "th")
                 {
-                    string sGameType = tableRows[i].InnerText;
+                    gameType = tableRows[i].InnerText;
                 }
                 else
                 {
                     var x = tableRows[i].ChildNodes;
                     List<string> rowValues = new List<string>();
+                    
                     for (int j = 0; j < x.ToList<HtmlAgilityPack.HtmlNode>().Count; j++)
                     {
-
                         if (tableRows[i].ChildNodes[j].Name == "td")
                         {
                             rowValues.Add(tableRows[i].ChildNodes[j].InnerText);
                         }
+                    }
+
+                    switch (rowValues.Count)
+                    {
+                        case 2:
+                            break;
+                        case 5:
+                            if (gameNumber != null)
+                            {
+                                // calculate the game because its over.
+                            }
+
+                            gameNumber = Convert.ToInt32(rowValues[0]);
+                            awayPlayer = match.AwaySquad.GetPlayerByName(rowValues[1].ToString());
+                            isHomeWin = !Convert.ToBoolean(rowValues[2]);
+                            homePlayer = match.HomeSquad.GetPlayerByName(rowValues[3].ToString());
+
+                            //Game.InsertNew
+                            break;
+                        default:
+                            throw (new InvalidOperationException("weird table structure man"));
                     }
                 }
             }
