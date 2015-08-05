@@ -28,6 +28,13 @@ namespace DartsRatingCalculator.Utility
 
         public static void FarmCampaigns(string webpageText)
         {
+            int id;
+            Season season;
+            int year;
+            Class _class;
+            Conference conference = new Conference();
+            int? identifier = null;
+
             var doc = new HtmlAgilityPack.HtmlDocument();
             doc.LoadHtml(webpageText);
 
@@ -42,10 +49,8 @@ namespace DartsRatingCalculator.Utility
 
             for (int i = 0; i < standingsTables.Count; i++)
             {
-                Campaign campaignToCreate = new Campaign();
-
-                campaignToCreate._Season = (Season)Enum.Parse(typeof(Season), campaignText.Split(' ')[0]);
-                campaignToCreate.Year = Convert.ToInt32(campaignText.Split(' ')[1]);
+                season = (Season)Enum.Parse(typeof(Season), campaignText.Split(' ')[0]);
+                year = Convert.ToInt32(campaignText.Split(' ')[1]);
 
                 var campaignText2 = campaignHeaders[i].InnerHtml.ToString();
                 string conferenceText = campaignText2.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)[1];
@@ -55,31 +60,31 @@ namespace DartsRatingCalculator.Utility
                 switch (conferenceText)
                 {
                     case "Bos":
-                        campaignToCreate._Conference = Conference.Boston;
+                        conference = Conference.Boston;
                         break;
                     case "Cent":
-                        campaignToCreate._Conference = Conference.Central;
+                        conference = Conference.Central;
                         break;
                     case "NS":
-                        campaignToCreate._Conference = Conference.NorthShore;
+                        conference = Conference.NorthShore;
                         break;
                     case "SS":
-                        campaignToCreate._Conference = Conference.SouthShore;
+                        conference = Conference.SouthShore;
                         break;
                 }
 
 
                 // get the class, identifier
                 if (classText.Substring(0, 2) == "SA")
-                    campaignToCreate._Class = Class.SuperA;
+                    _class = Class.SuperA;
                 else
                 {
-                    campaignToCreate._Class = (Class)Enum.Parse(typeof(Class), classText.Substring(0, 1));
-                    campaignToCreate.Identifier = Convert.ToInt32(classText.Substring(1, 1));
+                    _class = (Class)Enum.Parse(typeof(Class), classText.Substring(0, 1));
+                    identifier = Convert.ToInt32(classText.Substring(1, 1));
                 }
 
-                int j = Campaign.GetNewOrExistingCampaignId(ref campaignToCreate);
-                FarmSquad(standingsTables[i].OuterHtml, j);
+                id = Campaign.CommitCampaign(season, year, _class, conference, identifier);
+                FarmSquad(standingsTables[i].OuterHtml, id);
             }
         }
 
@@ -95,7 +100,7 @@ namespace DartsRatingCalculator.Utility
                 var squadPage = link.Attributes["href"].Value;
                 var squadId = Convert.ToInt32(squadPage.Substring(squadPage.LastIndexOf('=') + 1));
 
-                Squad.InsertNewSquad(squadId, campaignId);
+                Squad.CommitSquad(squadId, campaignId);
             }
         }
 
@@ -126,7 +131,7 @@ namespace DartsRatingCalculator.Utility
             var sponsor = teamInfo.Substring(0, teamInfo.LastIndexOf(','));
             var city = teamInfo.Substring(teamInfo.LastIndexOf(',') + 1).Trim();
 
-            Squad.UpdateSquadInfo(teamId, teamName, sponsor, city);
+            Squad.CommitSquadDetails(teamId, teamName, sponsor, city);
 
             var playerDoc = new HtmlAgilityPack.HtmlDocument();
             playerDoc.LoadHtml(doc.DocumentNode.SelectSingleNode("//div").OuterHtml);
@@ -146,11 +151,11 @@ namespace DartsRatingCalculator.Utility
 
             foreach (var m in teamMatchDoc.DocumentNode.SelectNodes("//a"))
             {
-                var z = m.Attributes["href"].Value;
-                var thereShouldBeSomethingAfterZ = Convert.ToInt32(z.Substring(z.LastIndexOf('=') + 1));
-                var a = m.InnerHtml;
+                var matchLink = m.Attributes["href"].Value;
+                var matchId = Convert.ToInt32(matchLink.Substring(matchLink.LastIndexOf('=') + 1));
+                var weekNumber = m.InnerHtml;
 
-                Match.InsertMatchHeader(thereShouldBeSomethingAfterZ, a, teamId);
+                Match.InsertMatchHeader(matchId, weekNumber, teamId);
             }
         }
 

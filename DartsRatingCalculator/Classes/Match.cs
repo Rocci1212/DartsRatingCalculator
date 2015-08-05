@@ -29,7 +29,7 @@ namespace DartsRatingCalculator
             SqlConnection connSql = new SqlConnection(Properties.Settings.Default.ConnectionString);
             connSql.Open();
 
-            SqlCommand cmdSql = new SqlCommand("InsertMatchHeader", connSql);
+            SqlCommand cmdSql = new SqlCommand("CommitMatch", connSql);
             cmdSql.CommandType = System.Data.CommandType.StoredProcedure;
             cmdSql.Parameters.AddWithValue("@MatchId", matchId);
             cmdSql.Parameters.AddWithValue("@WeekNumber", weekNumber);

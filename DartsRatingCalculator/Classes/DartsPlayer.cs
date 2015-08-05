@@ -33,7 +33,7 @@ namespace DartsRatingCalculator
             SqlConnection connSql = new SqlConnection(Properties.Settings.Default.ConnectionString);
             connSql.Open();
 
-            SqlCommand cmdSql = new SqlCommand("InsertNewPlayer", connSql);
+            SqlCommand cmdSql = new SqlCommand("CommitPlayer", connSql);
             cmdSql.CommandType = System.Data.CommandType.StoredProcedure;
             cmdSql.Parameters.AddWithValue("@PlayerId", playerId);
             cmdSql.Parameters.AddWithValue("@PlayerName", playerName);

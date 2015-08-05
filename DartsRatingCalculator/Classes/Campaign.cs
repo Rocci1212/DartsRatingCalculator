@@ -33,68 +33,84 @@ namespace DartsRatingCalculator
 
     public class Campaign
     {
-        public int id; // autonumber
-        public Season _Season;
-        public int Year;
-        public Class _Class;
-        public Conference _Conference;
-        public int? Identifier;
+        public int ID { get; private set; } // autonumber
+        public Season _Season { get; private set; }
+        public int Year { get; private set; }
+        public Class _Class { get; private set; }
+        public Conference _Conference { get; private set; }
+        public int? Identifier { get; private set; }
+
+        public Campaign(int id, Season season, int year, Class _class, Conference conference, int? identifier)
+        {
+            ID = id;
+            _Season = season;
+            Year = year;
+            _Class = _class;
+            _Conference = conference;
+            Identifier = identifier;
+        }
 
         public static Campaign GetCampaignFromDesc(string campaignDesc)
         {
+            int id;
+            Season season;
+            int year;
+            Class _class;
+            Conference conference = new Conference();
+            int? identifier = null;
+
             // split the campaign description
             string[] attributes = campaignDesc.Split(' ');
-            Campaign campaign = new Campaign();
 
             // get the conference
             switch (attributes[1])
             {
                 case "Bos":
-                    campaign._Conference = Conference.Boston;
+                    conference = Conference.Boston;
                     break;
                 case "Cent":
-                    campaign._Conference = Conference.Central;
+                    conference = Conference.Central;
                     break;
                 case "NS":
-                    campaign._Conference = Conference.NorthShore;
+                    conference = Conference.NorthShore;
                     break;
                 case "SS":
-                    campaign._Conference = Conference.SouthShore;
+                    conference = Conference.SouthShore;
                     break;
             }
 
             // get the class, identifier
             if (attributes[2].Substring(0, 2) == "SA")
-                campaign._Class = Class.SuperA;
+                _class = Class.SuperA;
             else
-            { 
-                campaign._Class = (Class)Enum.Parse(typeof(Class), attributes[2].Substring(0, 1));
-                campaign.Identifier = Convert.ToInt32(attributes[2].Substring(1, 1));
+            {
+                _class = (Class)Enum.Parse(typeof(Class), attributes[2].Substring(0, 1));
+                identifier = Convert.ToInt32(attributes[2].Substring(1, 1));
             }
 
             // get the season and year
-            campaign._Season = (Season)Enum.Parse(typeof(Season), attributes[3]);
-            campaign.Year = Convert.ToInt32(attributes[4]);
+            season = (Season)Enum.Parse(typeof(Season), attributes[3]);
+            year = Convert.ToInt32(attributes[4]);
 
             // pull the id from the database
-            campaign.id = GetNewOrExistingCampaignId(ref campaign);
+            id = CommitCampaign(season, year, _class, conference, identifier);
 
-            return campaign;
+            return new Campaign(id, season, year, _class, conference, identifier);
         }
 
-        public static int GetNewOrExistingCampaignId(ref Campaign campaign)
+        public static int CommitCampaign(Season season, int year, Class _class, Conference conference, int? identifier)
         {
             SqlConnection connSql = new SqlConnection(Properties.Settings.Default.ConnectionString);
             connSql.Open();
 
-            SqlCommand cmdSql = new SqlCommand("GetNewOrExistingCampaignIdFromProperties", connSql);
+            SqlCommand cmdSql = new SqlCommand("CommitCampaign", connSql);
             cmdSql.CommandType = System.Data.CommandType.StoredProcedure;
-            cmdSql.Parameters.AddWithValue("@Season", Convert.ToInt32(campaign._Season));
-            cmdSql.Parameters.AddWithValue("@Year", campaign.Year);
-            cmdSql.Parameters.AddWithValue("@Class", Convert.ToInt32(campaign._Class));
-            cmdSql.Parameters.AddWithValue("@Conference", Convert.ToInt32(campaign._Conference));
-            if (campaign.Identifier != null)
-                cmdSql.Parameters.AddWithValue("@Identifier", Convert.ToInt32(campaign.Identifier));
+            cmdSql.Parameters.AddWithValue("@Season", Convert.ToInt32(season));
+            cmdSql.Parameters.AddWithValue("@Year", year);
+            cmdSql.Parameters.AddWithValue("@Class", Convert.ToInt32(_class));
+            cmdSql.Parameters.AddWithValue("@Conference", Convert.ToInt32(conference));
+            if (identifier != null)
+                cmdSql.Parameters.AddWithValue("@Identifier", Convert.ToInt32(identifier));
 
             int returnValue = -1;
             
@@ -111,8 +127,6 @@ namespace DartsRatingCalculator
             }
 
             connSql.Close();
-
-            campaign.id = returnValue;
 
             return returnValue;
         }

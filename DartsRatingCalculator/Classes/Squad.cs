@@ -32,7 +32,7 @@ namespace DartsRatingCalculator
                 SqlCommand cmdSql = new SqlCommand("select * from squad where name = @name and campaign = @campaign", connSql);
 
                 cmdSql.Parameters.AddWithValue("@name", x[0]);
-                cmdSql.Parameters.AddWithValue("@campaign", campaign.id);
+                cmdSql.Parameters.AddWithValue("@campaign", campaign.ID);
 
                 using (SqlDataReader rReader = cmdSql.ExecuteReader())
                 {
@@ -52,7 +52,7 @@ namespace DartsRatingCalculator
                 cmdSql = new SqlCommand("select * from squad where name = @name and campaign = @campaign", connSql);
 
                 cmdSql.Parameters.AddWithValue("@name", x[1]);
-                cmdSql.Parameters.AddWithValue("@campaign", campaign.id);
+                cmdSql.Parameters.AddWithValue("@campaign", campaign.ID);
 
                 using (SqlDataReader rReader = cmdSql.ExecuteReader())
                 {
@@ -82,12 +82,12 @@ namespace DartsRatingCalculator
             return player;
         }
 
-        public static void InsertNewSquad(int squadId, int campaignId)
+        public static void CommitSquad(int squadId, int campaignId)
         {
             SqlConnection connSql = new SqlConnection(Properties.Settings.Default.ConnectionString);
             connSql.Open();
 
-            SqlCommand cmdSql = new SqlCommand("InsertNewSquad", connSql);
+            SqlCommand cmdSql = new SqlCommand("CommitSquad", connSql);
             cmdSql.CommandType = System.Data.CommandType.StoredProcedure;
             cmdSql.Parameters.AddWithValue("@SquadId", squadId);
             cmdSql.Parameters.AddWithValue("@CampaignId", campaignId);
@@ -97,12 +97,12 @@ namespace DartsRatingCalculator
             connSql.Close();
         }
 
-        internal static void UpdateSquadInfo(int squadId, string teamName, string sponsor, string city)
+        internal static void CommitSquadDetails(int squadId, string teamName, string sponsor, string city)
         {
             SqlConnection connSql = new SqlConnection(Properties.Settings.Default.ConnectionString);
             connSql.Open();
 
-            SqlCommand cmdSql = new SqlCommand("UpdateSquadInfo", connSql);
+            SqlCommand cmdSql = new SqlCommand("CommitSquadDetails", connSql);
             cmdSql.CommandType = System.Data.CommandType.StoredProcedure;
             cmdSql.Parameters.AddWithValue("@SquadId", squadId);
             cmdSql.Parameters.AddWithValue("@TeamName", teamName);

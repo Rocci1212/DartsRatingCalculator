@@ -1,4 +1,4 @@
-﻿/****** Object:  Table [dbo].[Game]    Script Date: 7/29/2015 5:53:25 PM ******/
+﻿/****** Object:  Table [dbo].[Game]    Script Date: 8/5/2015 1:26:14 PM ******/
 SET ANSI_NULLS ON
 GO
 
@@ -27,6 +27,7 @@ CREATE TABLE [dbo].[Game](
 (
 	[Match] ASC,
 	[GameNumber] ASC,
+	[GameType] ASC,
 	[Player] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
