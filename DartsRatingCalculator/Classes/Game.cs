@@ -21,7 +21,9 @@ namespace DartsRatingCalculator
     public class Game
     {
         public GameType _GameType;
-        public Squad AwaySquad, HomeSquad;
+        public DartsPlayer[] Players;
+        public int GameNumber;
+        public bool Result;
 
         public Game(GameType gameType)
         {

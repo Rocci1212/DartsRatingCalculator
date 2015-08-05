@@ -7,33 +7,15 @@ using Moserware.Skills;
 using System.Data.SqlClient;
 
 namespace DartsRatingCalculator
-{
-    public class CampaignRecord
-    {
-        public Campaign _Campaign;
-        public int Wins, Losses;
-    }
-
-    public class ClassRating
-    {
-        public Class _Class;
-        public Rating _Rating;
-    }
-
-    public class CampaignRating
-    {
-        public Campaign _Campaign;
-        public Rating _Rating;
-    }
-    
+{    
     public class DartsPlayer : Player
     {
         // for example http://stats.mmdl.org/index.php?view=player&playerid=12164 would have a player id of 12164
         public int Id;
         public string Name;
         public Rating _Rating; // all time rating
-        Dictionary<Campaign, Rating> CampaignRatings;
-        Dictionary<Class, Rating> ClassRating;
+        public Dictionary<Campaign, Rating> CampaignRatings;
+        public Dictionary<Class, Rating> ClassRatings;
 
         public DartsPlayer(string name, string teamId) : base(null)
         {

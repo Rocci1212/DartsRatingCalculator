@@ -138,11 +138,11 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Database\Stored Procedures\InsertMatchHeader.sql" />
-    <Content Include="Database\Stored Procedures\InsertNewSquad.sql" />
-    <Content Include="Database\Stored Procedures\InsertNewPlayer.sql" />
-    <Content Include="Database\Stored Procedures\UpdateSquadInfo.sql" />
-    <Content Include="Database\Stored Procedures\GetNewOrExistingCampaignIdFromProperties.sql" />
+    <Content Include="Database\Stored Procedures\CommitMatch.sql" />
+    <Content Include="Database\Stored Procedures\CommitSquad.sql" />
+    <Content Include="Database\Stored Procedures\CommitPlayer.sql" />
+    <Content Include="Database\Stored Procedures\CommitSquadDetails.sql" />
+    <Content Include="Database\Stored Procedures\CommitCampaign.sql" />
     <Content Include="Database\Tables\Player.sql" />
     <Content Include="Database\Tables\PlayerCampaignRating.sql" />
     <Content Include="Database\Tables\PlayerClassRating.sql" />

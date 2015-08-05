@@ -190,7 +190,9 @@ namespace DartsRatingCalculator.Utility
             doc.LoadHtml(docMatchTable.OuterHtml);
 
             var tableRows = docMatchTable.SelectNodes("//tr");
-            string gameType;
+
+            Game game;
+            GameType gameType = new GameType();
             int? gameNumber = null;
             bool isHomeWin;
             DartsPlayer awayPlayer, homePlayer;
@@ -199,7 +201,7 @@ namespace DartsRatingCalculator.Utility
             {
                 if (tableRows[i].FirstChild.Name == "th")
                 {
-                    gameType = tableRows[i].InnerText;
+                    gameType = (GameType)Enum.Parse(typeof(GameType), tableRows[i].InnerText);
                 }
                 else
                 {
@@ -223,6 +225,8 @@ namespace DartsRatingCalculator.Utility
                             {
                                 // calculate the game because its over.
                             }
+
+                            game = new Game(gameType);
 
                             gameNumber = Convert.ToInt32(rowValues[0]);
                             awayPlayer = match.AwaySquad.GetPlayerByName(rowValues[1].ToString());

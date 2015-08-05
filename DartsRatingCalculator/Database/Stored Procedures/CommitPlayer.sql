@@ -1,28 +1,17 @@
-﻿/****** Object:  StoredProcedure [dbo].[InsertNewPlayer]    Script Date: 7/29/2015 1:06:35 PM ******/
-SET ANSI_NULLS ON
+﻿SET ANSI_NULLS ON
 GO
 
 SET QUOTED_IDENTIFIER ON
 GO
 
-
--- =============================================
--- Author:		<Author,,Name>
--- Create date: <Create Date,,>
--- Description:	<Description,,>
--- =============================================
-CREATE PROCEDURE [dbo].[InsertNewPlayer]
+CREATE PROCEDURE [dbo].[CommitPlayer]
 (
 	@PlayerId			int,
 	@PlayerName			nvarchar(50),
-	@SquadId			int,
-	@RatingMean			numeric(19,5),
-	@RatingDeviation	numeric(19,5)
+	@SquadId			int
 )	
 AS
 BEGIN
-	-- SET NOCOUNT ON added to prevent extra result sets from
-	-- interfering with SELECT statements.
 	SET NOCOUNT ON;
 
     if not exists (select * from Player where id = @PlayerId)
@@ -101,6 +90,7 @@ BEGIN
 			SquadPlayer.squad = @SquadId
 	end
 END
+
 
 
 GO
