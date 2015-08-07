@@ -67,6 +67,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Classes\Squad.cs" />
+    <Content Include="Database\Stored Procedures\GetPlayerClassRatings.sql" />
+    <Content Include="Database\Stored Procedures\GetSquadPlayers.sql" />
     <Compile Include="Utility\AppDB.cs" />
     <Compile Include="Utility\ComboFill.cs" />
     <Compile Include="Classes\DartsPlayer.cs" />
@@ -138,7 +140,13 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Database\Stored Procedures\BlindCommitPlayer.sql" />
+    <Content Include="Database\Stored Procedures\CommitGame.sql" />
     <Content Include="Database\Stored Procedures\CommitMatch.sql" />
+    <Content Include="Database\Stored Procedures\GetCampaign.sql" />
+    <Content Include="Database\Stored Procedures\GetPlayer.sql" />
+    <Content Include="Database\Stored Procedures\GetPlayerCampaignRatings.sql" />
+    <Content Include="Database\Stored Procedures\GetSquad.sql" />
     <Content Include="Database\Stored Procedures\CommitSquad.sql" />
     <Content Include="Database\Stored Procedures\CommitPlayer.sql" />
     <Content Include="Database\Stored Procedures\CommitSquadDetails.sql" />

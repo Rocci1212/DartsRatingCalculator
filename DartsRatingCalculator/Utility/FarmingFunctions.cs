@@ -53,29 +53,60 @@ namespace DartsRatingCalculator.Utility
                 year = Convert.ToInt32(campaignText.Split(' ')[1]);
 
                 var campaignText2 = campaignHeaders[i].InnerHtml.ToString();
-                string conferenceText = campaignText2.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)[1];
-                string classText = campaignText2.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)[2];
+                string conferenceText;
+                string classText;
+
+                if (campaignText2 == "Division kikoro") // lol wtf
+                    break;
+
+                if (campaignText2 == "Division Boston") { conferenceText = "Bos"; classText = "SA"; }
+                else if (campaignText2 == "Division Central") { conferenceText = "Cent"; classText = "SA"; }
+                else if (campaignText2 == "Division North Shore") { conferenceText = "NS"; classText = "SA"; }
+                else if (campaignText2 == "Division South Shore") { conferenceText = "SS"; classText = "SA"; }
+                else
+                {
+                    conferenceText = campaignText2.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)[1];
+                    classText = campaignText2.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)[2];
+                }
 
                 // get the conference
-                switch (conferenceText)
+                switch (conferenceText.ToUpper())
                 {
-                    case "Bos":
+                    case "BOS":
+                    case "BOSTON":
                         conference = Conference.Boston;
                         break;
-                    case "Cent":
+                    case "CENT":
+                    case "CENT.":
+                    case "CENTRAL":
                         conference = Conference.Central;
+                        break;
+                    case "NORTH":
+                        if (classText.ToUpper() == "SHORE")
+                            classText = campaignText2.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)[3];
+                        conference = Conference.NorthShore;
                         break;
                     case "NS":
                         conference = Conference.NorthShore;
                         break;
+                    case "SOUTH":
+                        if (classText.ToUpper() == "SHORE")
+                            classText = campaignText2.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)[3];
+                        conference = Conference.SouthShore;
+                        break;
                     case "SS":
                         conference = Conference.SouthShore;
+                        break;
+                    default:
+                        throw new Exception("Invalid Conference");
                         break;
                 }
 
 
                 // get the class, identifier
-                if (classText.Substring(0, 2) == "SA")
+                if (classText.Length == 1)
+                    _class = (Class)Enum.Parse(typeof(Class), classText);
+                else if (classText.Substring(0, 2) == "SA" || classText.Substring(0, 2) == "Su")
                     _class = Class.SuperA;
                 else
                 {
@@ -118,6 +149,7 @@ namespace DartsRatingCalculator.Utility
 
         public static void FarmSquadInfo(string webpageText, int teamId)
         {
+            // manually add players for teamid 4034
             var doc = new HtmlAgilityPack.HtmlDocument();
             doc.LoadHtml(webpageText);
 
@@ -159,10 +191,10 @@ namespace DartsRatingCalculator.Utility
             }
         }
 
-        public static void FarmMatchPage(string url)
+        public static void FarmMatchPage(int matchId)
         {
             // get the webpage
-            WebRequest webRequest = WebRequest.Create(url);
+            WebRequest webRequest = WebRequest.Create("http://stats.mmdl.org/index.php?view=match&matchid=" + matchId.ToString());
             WebResponse webResponse = webRequest.GetResponse();
             Stream responseStream = webResponse.GetResponseStream();
             StreamReader rReader = new StreamReader(responseStream);
@@ -196,7 +228,7 @@ namespace DartsRatingCalculator.Utility
 
             var tableRows = docMatchTable.SelectNodes("//tr");
 
-            Game game;
+            Game game = new Game();
             GameType gameType = new GameType();
             int? gameNumber = null;
             bool isHomeWin;
@@ -204,9 +236,13 @@ namespace DartsRatingCalculator.Utility
 
             for (int i = 0; i < tableRows.ToList<HtmlAgilityPack.HtmlNode>().Count; i++)
             {
-                if (tableRows[i].FirstChild.Name == "th")
+                if (tableRows[i].FirstChild.Name == "th" && tableRows[i].InnerText == "Totals")
                 {
-                    gameType = (GameType)Enum.Parse(typeof(GameType), tableRows[i].InnerText);
+                    break;
+                }
+                else if (tableRows[i].FirstChild.Name == "th")
+                {
+                    gameType = Game.GetGameTypeFromString(tableRows[i].InnerText);
                 }
                 else
                 {
@@ -224,20 +260,153 @@ namespace DartsRatingCalculator.Utility
                     switch (rowValues.Count)
                     {
                         case 2:
+                            if (rowValues[0] != "&nbsp;")
+                                game.AwayDartsPlayers.Add(match.AwaySquad.DartsPlayers[rowValues[0].ToString()]);
+                            if (rowValues[1] != "&nbsp;")
+                                game.HomeDartsPlayers.Add(match.HomeSquad.DartsPlayers[rowValues[1].ToString()]);
                             break;
                         case 5:
-                            if (gameNumber != null)
+                            if (game.GameNumber != 0)
                             {
-                                // calculate the game because its over.
+                                game.CalculateAndCommitGame(match);
                             }
 
-                            game = new Game(gameType);
+                            game = new Game();
 
-                            gameNumber = Convert.ToInt32(rowValues[0]);
-                            awayPlayer = match.AwaySquad.GetPlayerByName(rowValues[1].ToString());
-                            isHomeWin = !Convert.ToBoolean(rowValues[2]);
-                            homePlayer = match.HomeSquad.GetPlayerByName(rowValues[3].ToString());
+                            game._GameType = gameType;
+                            game.GameNumber = Convert.ToInt32(rowValues[0]);
+                            if (rowValues[1] != "&nbsp;")
+                                game.AwayDartsPlayers.Add(match.AwaySquad.DartsPlayers[rowValues[1].ToString()]);
+                            game.IsHomeWin = (0 == Convert.ToInt32(rowValues[2]));
+                            if (rowValues[3] != "&nbsp;")
+                                game.HomeDartsPlayers.Add(match.HomeSquad.DartsPlayers[rowValues[3].ToString()]);
 
+                            //Game.InsertNew
+                            break;
+                        default:
+                            throw (new InvalidOperationException("weird table structure man"));
+                    }
+                }
+            }
+        }
+
+        public static void FarmMatchPage(int matchId, int campaignId)
+        {
+            // get the webpage
+            WebRequest webRequest = WebRequest.Create("http://stats.mmdl.org/index.php?view=match&matchid=" + matchId.ToString());
+            WebResponse webResponse = webRequest.GetResponse();
+            Stream responseStream = webResponse.GetResponseStream();
+            StreamReader rReader = new StreamReader(responseStream);
+            string sWebpageText = rReader.ReadToEnd();
+
+            // make sure that the webpage contains the match table
+            if (!sWebpageText.Contains(@"<table id=""match_table"">"))
+                throw new InvalidOperationException();
+
+            // html agility pack to parse
+            var doc = new HtmlAgilityPack.HtmlDocument();
+            doc.LoadHtml(sWebpageText);
+
+            // get the match number
+            var h3nodes = doc.DocumentNode.SelectNodes("//h3");
+            var matchDesc = h3nodes[2].InnerHtml;
+
+            // get the squads competing
+            var h4nodes = doc.DocumentNode.SelectNodes("//h4");
+            var squadDesc = h4nodes[0].InnerHtml;
+
+            Match match = new Match(matchDesc, squadDesc, campaignId);
+
+            // get the match table html
+            var docMatchTable = doc.DocumentNode.SelectSingleNode("//table[@id='match_table']");
+            doc.LoadHtml(docMatchTable.OuterHtml);
+
+            var tableRows = docMatchTable.SelectNodes("//tr");
+
+            Game game = new Game();
+            GameType gameType = new GameType();
+            int gameNumber = 1;
+            bool isHomeWin;
+            DartsPlayer awayPlayer, homePlayer;
+
+            for (int i = 0; i < tableRows.ToList<HtmlAgilityPack.HtmlNode>().Count; i++)
+            {
+                if (tableRows[i].FirstChild.Name == "th" && tableRows[i].InnerText == "Totals")
+                {
+                    break;
+                }
+                else if (tableRows[i].FirstChild.Name == "th")
+                {
+                    gameType = Game.GetGameTypeFromString(tableRows[i].InnerText);
+                }
+                else
+                {
+                    var x = tableRows[i].ChildNodes;
+                    List<string> rowValues = new List<string>();
+
+                    for (int j = 0; j < x.ToList<HtmlAgilityPack.HtmlNode>().Count; j++)
+                    {
+                        if (tableRows[i].ChildNodes[j].Name == "td")
+                        {
+                            rowValues.Add(tableRows[i].ChildNodes[j].InnerText);
+                        }
+                    }
+                    //match.AwaySquad.DartsPlayers.Add("Paul Cedrone", DartsPlayer.GetPlayer(10408));
+                    switch (rowValues.Count)
+                    {
+                        case 2:
+                            if (rowValues[0] != "&nbsp;" && rowValues[0].Trim() != "")
+                            {
+                                if (!match.AwaySquad.DartsPlayers.ContainsKey(rowValues[0].ToString()))
+                                {
+                                    int n = DartsPlayer.CreateDummyPlayer(rowValues[0].ToString(), match.AwaySquad.SquadId);
+                                    match.AwaySquad.DartsPlayers.Add(DartsPlayer.GetPlayer(n).Name, DartsPlayer.GetPlayer(n));
+                                }
+                                if (!game.AwayDartsPlayers.Contains(match.AwaySquad.DartsPlayers[rowValues[0].ToString()]))
+                                    game.AwayDartsPlayers.Add(match.AwaySquad.DartsPlayers[rowValues[0].ToString()]);
+                            }
+                            if (rowValues[1] != "&nbsp;" && rowValues[1].Trim() != "")
+                            {
+                                if (!match.HomeSquad.DartsPlayers.ContainsKey(rowValues[1].ToString()))
+                                {
+                                    int n = DartsPlayer.CreateDummyPlayer(rowValues[1].ToString(), match.HomeSquad.SquadId);
+                                    match.HomeSquad.DartsPlayers.Add(DartsPlayer.GetPlayer(n).Name, DartsPlayer.GetPlayer(n));
+                                }
+                                if (!game.HomeDartsPlayers.Contains(match.HomeSquad.DartsPlayers[rowValues[1].ToString()]))
+                                game.HomeDartsPlayers.Add(match.HomeSquad.DartsPlayers[rowValues[1].ToString()]);
+                            }
+                            break;
+                        case 5:
+                            if (game.GameNumber != 0)
+                            {
+                                game.CalculateAndCommitGame(match); // john - 
+                            }
+
+                            game = new Game();
+
+                            game._GameType = gameType;
+                            game.GameNumber = gameNumber; gameNumber++;
+                            if (rowValues[1] != "&nbsp;" && rowValues[1].Trim() != "")
+                            {
+                                if (!match.AwaySquad.DartsPlayers.ContainsKey(rowValues[1].ToString()))
+                                {
+                                    int n = DartsPlayer.CreateDummyPlayer(rowValues[1].ToString(), match.AwaySquad.SquadId);
+                                    match.AwaySquad.DartsPlayers.Add(DartsPlayer.GetPlayer(n).Name, DartsPlayer.GetPlayer(n));
+                                }
+                                if (!game.AwayDartsPlayers.Contains(match.AwaySquad.DartsPlayers[rowValues[1].ToString()]))
+                                    game.AwayDartsPlayers.Add(match.AwaySquad.DartsPlayers[rowValues[1].ToString()]);
+                            }
+                            game.IsHomeWin = (0 == Convert.ToInt32(rowValues[2]));
+                            if (rowValues[3] != "&nbsp;" && rowValues[3].Trim() != "")
+                            {
+                                if (!match.HomeSquad.DartsPlayers.ContainsKey(rowValues[3].ToString()))
+                                {
+                                    int n = DartsPlayer.CreateDummyPlayer(rowValues[3].ToString(), match.HomeSquad.SquadId);
+                                    match.HomeSquad.DartsPlayers.Add(DartsPlayer.GetPlayer(n).Name, DartsPlayer.GetPlayer(n));
+                                }
+                                if (!game.HomeDartsPlayers.Contains(match.HomeSquad.DartsPlayers[rowValues[3].ToString()]))
+                                    game.HomeDartsPlayers.Add(match.HomeSquad.DartsPlayers[rowValues[3].ToString()]);
+                            }
                             //Game.InsertNew
                             break;
                         default:

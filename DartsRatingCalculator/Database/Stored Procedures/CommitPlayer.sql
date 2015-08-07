@@ -26,32 +26,21 @@ BEGIN
 
 	if not exists 
 	(
-		select 
-			* 
+		select
+			*
 		from 
-			Player inner join SquadPlayer 
-			on Player.ID = SquadPlayer.Player 
-	
-			inner join Squad 
-			on SquadPlayer.Squad = Squad.ID 
-	
-			inner join PlayerCampaignRating 
-			on Player.ID = PlayerCampaignRating.Player and Squad.Campaign = PlayerCampaignRating.Campaign 
+			PlayerCampaignRating
 		where
-			SquadPlayer.squad = @SquadId
+			Player = @PlayerId and Campaign = (select top 1 Campaign from Squad where ID = @SquadId)
 	)
 	begin
 		insert into PlayerCampaignRating(Player, Campaign)
 		select
-			Player.ID, Squad.Campaign
+			@PlayerId, Campaign
 		from
-			Player inner join SquadPlayer 
-			on Player.ID = SquadPlayer.Player
-	
-			inner join Squad 
-			on SquadPlayer.Squad = Squad.ID 
+			Squad 
 		where
-			SquadPlayer.squad = @SquadId
+			ID = @SquadId
 	end
 
 	if not exists 
@@ -59,37 +48,22 @@ BEGIN
 		select 
 			* 
 		from 
-			Player inner join SquadPlayer 
-			on Player.ID = SquadPlayer.Player 
-	
-			inner join Squad 
-			on SquadPlayer.Squad = Squad.ID 
-	
-			inner join Campaign 
-			on Squad.Campaign = Campaign.ID
-			
-			inner join PlayerClassRating
-			on Campaign.Class = PlayerClassRating.Class 
+			PlayerClassRating
 		where
-			SquadPlayer.squad = @SquadId
+			Player = @PlayerId and Class = (select top 1 Class from Squad inner join Campaign on Squad.Campaign = Campaign.ID where Squad.ID = @SquadId)
 	)
 	begin
 		insert into PlayerClassRating(Player, Class)
 		select
-			Player.ID, Campaign.Class
+			@PlayerId, Campaign.Class
 		from
-			Player inner join SquadPlayer 
-			on Player.ID = SquadPlayer.Player
-	
-			inner join Squad 
-			on SquadPlayer.Squad = Squad.ID 
-
-			inner join Campaign 
+			Squad inner join Campaign 
 			on Squad.Campaign = Campaign.ID
 		where
-			SquadPlayer.squad = @SquadId
+			Squad.id = @SquadId
 	end
 END
+
 
 
 

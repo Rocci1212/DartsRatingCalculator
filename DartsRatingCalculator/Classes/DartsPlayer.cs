@@ -14,8 +14,8 @@ namespace DartsRatingCalculator
         public int Id;
         public string Name;
         public Rating _Rating; // all time rating
-        public Dictionary<Campaign, Rating> CampaignRatings;
-        public Dictionary<Class, Rating> ClassRatings;
+        public Dictionary<int, Rating> CampaignRatings = new Dictionary<int, Rating>();
+        public Dictionary<int, Rating> ClassRatings = new Dictionary<int, Rating>();
 
         public DartsPlayer(string name, string teamId) : base(null)
         {
@@ -25,7 +25,31 @@ namespace DartsRatingCalculator
         
         public DartsPlayer(int playerId) : base(playerId)
         {
+            Id = playerId;
+        }
+
+        public static int CreateDummyPlayer(string name, int squadId)
+        {
+            int i = -1;
+            SqlConnection connSql = new SqlConnection(Properties.Settings.Default.ConnectionString);
+            connSql.Open();
             
+            SqlCommand cmdSql = new SqlCommand("BlindCommitPlayer", connSql);
+            cmdSql.CommandType = System.Data.CommandType.StoredProcedure;
+            cmdSql.Parameters.AddWithValue("@PlayerName", name);
+            cmdSql.Parameters.AddWithValue("@SquadId", squadId);
+
+            using (SqlDataReader rReader = cmdSql.ExecuteReader())
+            {
+                if (rReader.Read())
+                {
+                    i = Convert.ToInt32(rReader[0]);
+                }
+            }
+
+            connSql.Close();
+
+            return i;
         }
 
         public static void InsertNewPlayer(int playerId, string playerName, int teamId)
@@ -38,12 +62,61 @@ namespace DartsRatingCalculator
             cmdSql.Parameters.AddWithValue("@PlayerId", playerId);
             cmdSql.Parameters.AddWithValue("@PlayerName", playerName);
             cmdSql.Parameters.AddWithValue("@SquadId", teamId);
-            cmdSql.Parameters.AddWithValue("@RatingMean", GameInfo.DefaultGameInfo.DefaultRating.Mean);
-            cmdSql.Parameters.AddWithValue("@RatingDeviation", GameInfo.DefaultGameInfo.DefaultRating.StandardDeviation);
 
             cmdSql.ExecuteNonQuery();
 
             connSql.Close();
+        }
+
+        public static DartsPlayer GetPlayer(int playerId)
+        {
+            DartsPlayer player = new DartsPlayer(playerId);
+
+            SqlConnection connSql = new SqlConnection(Properties.Settings.Default.ConnectionString);
+            connSql.Open();
+
+            SqlCommand cmdSql = new SqlCommand("GetPlayer", connSql);
+            cmdSql.CommandType = System.Data.CommandType.StoredProcedure;
+            cmdSql.Parameters.AddWithValue("@PlayerID", playerId);
+
+            using (SqlDataReader rReader = cmdSql.ExecuteReader())
+            {
+                if (rReader.Read())
+                {
+                    player.Name = Convert.ToString(rReader["Name"]);
+                    player._Rating = new Rating(Convert.ToDouble(rReader["RatingMean"]), Convert.ToDouble(rReader["RatingDeviation"]));
+                }
+            }
+
+            cmdSql = new SqlCommand("GetPlayerClassRatings", connSql);
+            cmdSql.CommandType = System.Data.CommandType.StoredProcedure;
+            cmdSql.Parameters.AddWithValue("@PlayerID", playerId);
+
+            using (SqlDataReader rReader = cmdSql.ExecuteReader())
+            {
+                while (rReader.Read())
+                {
+                    player.ClassRatings.Add(Convert.ToInt32(rReader["Class"]), 
+                        new Rating(Convert.ToDouble(rReader["RatingMean"]), Convert.ToDouble(rReader["RatingDeviation"])));
+                }
+            }
+
+            cmdSql = new SqlCommand("GetPlayerCampaignRatings", connSql);
+            cmdSql.CommandType = System.Data.CommandType.StoredProcedure;
+            cmdSql.Parameters.AddWithValue("@PlayerID", playerId);
+
+            using (SqlDataReader rReader = cmdSql.ExecuteReader())
+            {
+                while (rReader.Read())
+                {
+                    player.CampaignRatings.Add(Convert.ToInt32(rReader["Campaign"]),
+                        new Rating(Convert.ToDouble(rReader["RatingMean"]), Convert.ToDouble(rReader["RatingDeviation"])));
+                }
+            }
+
+            connSql.Close();
+
+            return player;
         }
     }
 }

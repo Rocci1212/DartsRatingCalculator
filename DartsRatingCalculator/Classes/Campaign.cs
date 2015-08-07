@@ -50,6 +50,42 @@ namespace DartsRatingCalculator
             Identifier = identifier;
         }
 
+        public static Campaign GetCampaign(int campaignId)
+        {
+            Campaign campaign = new Campaign(0, Season.Fall, 0, Class.SuperA, Conference.Boston, null);
+            SqlConnection connSql = new SqlConnection(Properties.Settings.Default.ConnectionString);
+            connSql.Open();
+
+            SqlCommand cmdSql = new SqlCommand("GetCampaign", connSql);
+            cmdSql.CommandType = System.Data.CommandType.StoredProcedure;
+            cmdSql.Parameters.AddWithValue("@CampaignID", campaignId);
+
+            using (SqlDataReader rReader = cmdSql.ExecuteReader())
+            {
+                if (rReader.Read())
+                {
+                    if (rReader["Identifier"] != DBNull.Value)
+                        campaign = new Campaign(
+                            campaignId, (Season)rReader["Season"],
+                            Convert.ToInt32(rReader["Year"]),
+                            (Class)rReader["Class"],
+                            (Conference)rReader["Conference"],
+                            Convert.ToInt32(rReader["Identifier"]));
+                    else
+                        campaign = new Campaign(
+                            campaignId, (Season)rReader["Season"],
+                            Convert.ToInt32(rReader["Year"]),
+                            (Class)rReader["Class"],
+                            (Conference)rReader["Conference"],
+                            null);
+                }
+            }
+
+            connSql.Close();
+
+            return campaign;
+        }
+
         public static Campaign GetCampaignFromDesc(string campaignDesc)
         {
             int id;
@@ -60,7 +96,7 @@ namespace DartsRatingCalculator
             int? identifier = null;
 
             // split the campaign description
-            string[] attributes = campaignDesc.Split(' ');
+            string[] attributes = campaignDesc.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
             // get the conference
             switch (attributes[1])

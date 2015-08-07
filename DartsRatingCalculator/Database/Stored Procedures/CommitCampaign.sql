@@ -4,6 +4,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
+
 CREATE PROCEDURE [dbo].[CommitCampaign]
 (
 	@Season int,
@@ -20,12 +21,12 @@ BEGIN
 	select @Season, @Year, @Class, @Conference, @Identifier
 	where not exists
 	(
-		select 1 from Campaign where Season = @Season and Year = @Year and Class = @Class and Conference = @Conference and isnull(Identifier, -1) = isnull(@Identifier, -1)
+		SELECT 1 from Campaign where Season = @Season and Year = @Year and Class = @Class and Conference = @Conference and isnull(Identifier, -1) = isnull(@Identifier, -1)
 	)
 
 	select * from Campaign where Season = @Season and Year = @Year and Class = @Class and Conference = @Conference and isnull(Identifier, -1) = isnull(@Identifier, -1)
 END
 
-GO
 
+GO
 

@@ -24,6 +24,14 @@ namespace DartsRatingCalculator
             Squad.GetSquadsFromDesc(squadDesc, _Campaign, ref AwaySquad, ref HomeSquad);
         }
 
+        public Match(string matchDesc, string squadDesc, int campaignId)
+        {
+            MatchId = Convert.ToInt32(matchDesc.Substring(matchDesc.IndexOf("#") + 1));
+            WeekNumber = Convert.ToInt32(squadDesc.Substring(5, squadDesc.IndexOf(":") - 5));
+            _Campaign = Campaign.GetCampaign(campaignId);
+            Squad.GetSquadsFromDesc(squadDesc, _Campaign, ref AwaySquad, ref HomeSquad);
+        }
+
         public static void InsertMatchHeader(int matchId, string weekNumber, int teamId)
         {
             SqlConnection connSql = new SqlConnection(Properties.Settings.Default.ConnectionString);

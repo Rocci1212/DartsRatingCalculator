@@ -1,6 +1,6 @@
-﻿/****** Object:  StoredProcedure [dbo].[CommitMatch]    Script Date: 8/5/2015 12:29:37 PM ******/
-SET ANSI_NULLS ON
+﻿SET ANSI_NULLS ON
 GO
+
 SET QUOTED_IDENTIFIER ON
 GO
 
@@ -26,7 +26,11 @@ BEGIN
 	from
 		Squad
 	where	
-		Squad.ID = @SquadId
+		Squad.ID = @SquadId and Match.ID = @MatchId
 END
 
+
+
+
+GO
 
