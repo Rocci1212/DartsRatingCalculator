@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DartsRatingCalculator", ""DartsRatingCalculator\DartsRatingCalculator.csproj", "{F6EEE23D-60B2-4C77-8AB7-CB099EB1B570}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DartsRatingCalculator", "DartsRatingCalculator\DartsRatingCalculator.csproj", "{F6EEE23D-60B2-4C77-8AB7-CB099EB1B570}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DartsWebApp", "DartsWebApp\DartsWebApp.csproj", "{A3EA9E59-654E-42A1-AD10-5EA38B80ABFC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{F6EEE23D-60B2-4C77-8AB7-CB099EB1B570}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F6EEE23D-60B2-4C77-8AB7-CB099EB1B570}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F6EEE23D-60B2-4C77-8AB7-CB099EB1B570}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3EA9E59-654E-42A1-AD10-5EA38B80ABFC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3EA9E59-654E-42A1-AD10-5EA38B80ABFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3EA9E59-654E-42A1-AD10-5EA38B80ABFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3EA9E59-654E-42A1-AD10-5EA38B80ABFC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

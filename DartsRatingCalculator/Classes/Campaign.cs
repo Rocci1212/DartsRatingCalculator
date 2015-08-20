@@ -158,8 +158,6 @@ namespace DartsRatingCalculator
                 }
                 else
                     throw (new IndexOutOfRangeException());
-
-                rReader.Close();
             }
 
             connSql.Close();
