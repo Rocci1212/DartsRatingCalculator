@@ -234,6 +234,7 @@ namespace DartsRatingCalculator.Utility
             {
                 if (tableRows[i].FirstChild.Name == "th" && tableRows[i].InnerText == "Totals")
                 {
+                    game.CalculateAndCommitGame(match);
                     break;
                 }
                 else if (tableRows[i].FirstChild.Name == "th")
