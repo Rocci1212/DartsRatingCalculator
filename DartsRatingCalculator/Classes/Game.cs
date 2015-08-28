@@ -148,7 +148,8 @@ namespace DartsRatingCalculator
 
         public void CommitGame(DartsPlayer player, Match match, string ratingToAdjust)
         {
-            SqlConnection connSql = new SqlConnection(Properties.Settings.Default.ConnectionString);
+            SqlConnection connSql = new SqlConnection(
+                Gravoc.Encryption.Encryption.Decrypt(Properties.Settings.Default.ConnectionString));
             connSql.Open();
 
             SqlCommand cmdSql = new SqlCommand("CommitGame", connSql);

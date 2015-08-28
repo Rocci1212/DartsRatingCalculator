@@ -21,7 +21,7 @@
     <div class="table-responsive">
         <asp:GridView ID="grdPlayer" runat="server" AutoGenerateColumns="False" GridLines="Vertical" AllowSorting="True" CssClass="table table-striped" PagerStyle-CssClass="pgr"  
             AlternatingRowStyle-CssClass="alt" BackColor="White" BorderColor="#DEDFDE" BorderStyle="None" BorderWidth="1px" CellPadding="4" ForeColor="Black">
-<AlternatingRowStyle CssClass="alt" BackColor="White"></AlternatingRowStyle>
+            <AlternatingRowStyle CssClass="alt" BackColor="White"></AlternatingRowStyle>
             <Columns>
                 <asp:HyperLinkField  HeaderText="Match" DataTextField="Match" DataNavigateUrlFormatString="http://stats.mmdl.org/index.php?view=match&matchid={0}" DataNavigateUrlFields="Match"  />                        
                 <asp:BoundField HeaderText="Game #" DataField="GameNumber" />

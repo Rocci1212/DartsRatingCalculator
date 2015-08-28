@@ -14,35 +14,45 @@ namespace WebApplication1
         SqlConnection connSql = new SqlConnection(Properties.Settings.Default.ConnectionString);
         protected void Page_Load(object sender, EventArgs e)
         {
-            string playerId, realm;
+            string playerId, realm, param;
             if (Request.QueryString["q"] == null)
             {
                 playerId = "12164";
                 realm = "all";
+                param = "-1";
             }
             else if (Request.QueryString["q"].Split('_').Length == 1)
             {
                 playerId = Request.QueryString["q"];
                 realm = "all";
+                param = "-1";
+            }
+            else if (Request.QueryString["q"].Split('_').Length == 2)
+            {
+                playerId = Request.QueryString["q"].Split('_')[0];
+                realm = Request.QueryString["q"].Split('_')[1];
+                param = "-1";
             }
             else
             {
                 playerId = Request.QueryString["q"].Split('_')[0];
                 realm = Request.QueryString["q"].Split('_')[1];
+                param = Request.QueryString["q"].Split('_')[2];
             }
             
             connSql.Open();
 
-            FillForm(Convert.ToInt32(playerId), realm);
+            FillForm(Convert.ToInt32(playerId), realm, param);
         }
 
-        private void FillForm(int playerId, string realm)
+        private void FillForm(int playerId, string realm, string param)
         {
             
 
             SqlDataAdapter adpSql = new SqlDataAdapter("exec getplayergamehistory @player, @realm", connSql);
             adpSql.SelectCommand.Parameters.AddWithValue("@player", playerId);
             adpSql.SelectCommand.Parameters.AddWithValue("@realm", realm);
+            adpSql.SelectCommand.Parameters.AddWithValue("@param1", param);
             DataTable dstdata = new DataTable("Data");
             adpSql.Fill(dstdata);
 

@@ -17,7 +17,8 @@ namespace DartsRatingCalculator
 
         public static void GetSquadsFromDesc(string squadDesc, Campaign campaign, ref Squad awaySquad, ref Squad homeSquad)
         {
-            SqlConnection connSql = new SqlConnection(Properties.Settings.Default.ConnectionString);
+            SqlConnection connSql = new SqlConnection(
+                Gravoc.Encryption.Encryption.Decrypt(Properties.Settings.Default.ConnectionString));
             connSql.Open();
             SqlCommand cmdSql;
 
@@ -114,7 +115,8 @@ namespace DartsRatingCalculator
 
         internal static void CommitSquad(int squadId, int campaignId)
         {
-            SqlConnection connSql = new SqlConnection(Properties.Settings.Default.ConnectionString);
+            SqlConnection connSql = new SqlConnection(
+                Gravoc.Encryption.Encryption.Decrypt(Properties.Settings.Default.ConnectionString));
             connSql.Open();
 
             SqlCommand cmdSql = new SqlCommand("CommitSquad", connSql);
@@ -129,7 +131,8 @@ namespace DartsRatingCalculator
 
         internal static void CommitSquadDetails(int squadId, string teamName, string sponsor, string city)
         {
-            SqlConnection connSql = new SqlConnection(Properties.Settings.Default.ConnectionString);
+            SqlConnection connSql = new SqlConnection(
+                Gravoc.Encryption.Encryption.Decrypt(Properties.Settings.Default.ConnectionString));
             connSql.Open();
 
             SqlCommand cmdSql = new SqlCommand("CommitSquadDetails", connSql);
@@ -146,7 +149,8 @@ namespace DartsRatingCalculator
 
         private void PopulatePlayers()
         {
-            SqlConnection connSql = new SqlConnection(Properties.Settings.Default.ConnectionString);
+            SqlConnection connSql = new SqlConnection(
+                Gravoc.Encryption.Encryption.Decrypt(Properties.Settings.Default.ConnectionString));
             connSql.Open();
 
             SqlCommand cmdSql = new SqlCommand("GetSquadPlayers", connSql);

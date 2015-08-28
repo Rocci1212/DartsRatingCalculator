@@ -53,7 +53,8 @@ namespace DartsRatingCalculator
         public static Campaign GetCampaign(int campaignId)
         {
             Campaign campaign = new Campaign(0, Season.Fall, 0, Class.SuperA, Conference.Boston, null);
-            SqlConnection connSql = new SqlConnection(Properties.Settings.Default.ConnectionString);
+            SqlConnection connSql = new SqlConnection(
+                Gravoc.Encryption.Encryption.Decrypt(Properties.Settings.Default.ConnectionString));
             connSql.Open();
 
             SqlCommand cmdSql = new SqlCommand("GetCampaign", connSql);
@@ -136,7 +137,8 @@ namespace DartsRatingCalculator
 
         public static int CommitCampaign(Season season, int year, Class _class, Conference conference, int? identifier)
         {
-            SqlConnection connSql = new SqlConnection(Properties.Settings.Default.ConnectionString);
+            SqlConnection connSql = new SqlConnection(
+                Gravoc.Encryption.Encryption.Decrypt(Properties.Settings.Default.ConnectionString));
             connSql.Open();
 
             SqlCommand cmdSql = new SqlCommand("CommitCampaign", connSql);

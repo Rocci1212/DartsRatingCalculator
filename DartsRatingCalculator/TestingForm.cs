@@ -102,7 +102,8 @@ namespace DartsRatingCalculator
             Utility.FarmingFunctions.FarmStandingsPage("http://stats.mmdl.org/index.php?view=standings&seasonid=21&conferenceid=3");
             Utility.FarmingFunctions.FarmStandingsPage("http://stats.mmdl.org/index.php?view=standings&seasonid=21&conferenceid=4");
             */
-            SqlConnection connSql = new SqlConnection(Properties.Settings.Default.ConnectionString);
+            SqlConnection connSql = new SqlConnection(
+                Gravoc.Encryption.Encryption.Decrypt(Properties.Settings.Default.ConnectionString));
             connSql.Open();
             
             SqlCommand cmdSql = new SqlCommand("select id from squad", connSql);

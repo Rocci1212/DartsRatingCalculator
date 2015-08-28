@@ -31,7 +31,8 @@ namespace DartsRatingCalculator
         public static int CreateDummyPlayer(string name, int squadId)
         {
             int i = -1;
-            SqlConnection connSql = new SqlConnection(Properties.Settings.Default.ConnectionString);
+            SqlConnection connSql = new SqlConnection(
+                Gravoc.Encryption.Encryption.Decrypt(Properties.Settings.Default.ConnectionString));
             connSql.Open();
             
             SqlCommand cmdSql = new SqlCommand("BlindCommitPlayer", connSql);
@@ -54,7 +55,8 @@ namespace DartsRatingCalculator
 
         public static void InsertNewPlayer(int playerId, string playerName, int teamId)
         {
-            SqlConnection connSql = new SqlConnection(Properties.Settings.Default.ConnectionString);
+            SqlConnection connSql = new SqlConnection(
+                Gravoc.Encryption.Encryption.Decrypt(Properties.Settings.Default.ConnectionString));
             connSql.Open();
 
             SqlCommand cmdSql = new SqlCommand("CommitPlayer", connSql);
@@ -72,7 +74,8 @@ namespace DartsRatingCalculator
         {
             DartsPlayer player = new DartsPlayer(playerId);
 
-            SqlConnection connSql = new SqlConnection(Properties.Settings.Default.ConnectionString);
+            SqlConnection connSql = new SqlConnection(
+                Gravoc.Encryption.Encryption.Decrypt(Properties.Settings.Default.ConnectionString));
             connSql.Open();
 
             SqlCommand cmdSql = new SqlCommand("GetPlayer", connSql);

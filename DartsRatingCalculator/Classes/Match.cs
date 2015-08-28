@@ -34,7 +34,8 @@ namespace DartsRatingCalculator
 
         public static void InsertMatchHeader(int matchId, string weekNumber, int teamId)
         {
-            SqlConnection connSql = new SqlConnection(Properties.Settings.Default.ConnectionString);
+            SqlConnection connSql = new SqlConnection(
+                Gravoc.Encryption.Encryption.Decrypt(Properties.Settings.Default.ConnectionString));
             connSql.Open();
 
             SqlCommand cmdSql = new SqlCommand("CommitMatch", connSql);
