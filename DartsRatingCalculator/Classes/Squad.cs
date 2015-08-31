@@ -13,7 +13,7 @@ namespace DartsRatingCalculator
         public int SquadId;
         string Name, Sponsor, City;
         Campaign _Campaign;
-        public Dictionary<string, DartsPlayer> DartsPlayers = new Dictionary<string, DartsPlayer>(); // so i can pull the player by his/her name
+        public Dictionary<string, DartsPlayer> DartsPlayers = new Dictionary<string, DartsPlayer>(StringComparer.OrdinalIgnoreCase); // so i can pull the player by his/her name
 
         public static void GetSquadsFromDesc(string squadDesc, Campaign campaign, ref Squad awaySquad, ref Squad homeSquad)
         {

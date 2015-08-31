@@ -25,9 +25,8 @@ namespace DartsRatingCalculator.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=APPDEV2;Initial Catalog=MDC;Persist Security Info=True;User ID=sa;Pas" +
-            "sword=Gravoc49")]
+        [global::System.Configuration.DefaultSettingValueAttribute("rtGBmI26IotlJ0jrejQLupWbEiwv0J84s1Dm+cKVdZc175f1rhfKtgNFm6XKuuBQI+0Ug8LBh79w1V1vH" +
+            "H1GUz+OAlY7C76yqBZO75WYlqn3g30K0kh/2r7UYmuGKIhB")]
         public string ConnectionString {
             get {
                 return ((string)(this["ConnectionString"]));

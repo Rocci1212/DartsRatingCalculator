@@ -64,6 +64,7 @@ namespace DartsRatingCalculator
 
         public void CalculateAndCommitGame(Match match)
         {
+            // TODO: Weed out matches like this: http://stats.mmdl.org/index.php?view=match&matchid=33567
             List<Player> awayPlayers = new List<Player>(); 
             List<Player> homePlayers = new List<Player>();
             foreach (DartsPlayer x in AwayDartsPlayers.Concat(HomeDartsPlayers))

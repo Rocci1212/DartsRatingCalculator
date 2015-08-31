@@ -116,7 +116,7 @@ namespace DartsRatingCalculator
                 }
             }
             */
-            cmdSql = new SqlCommand("select * from match where id <> 3007 order by campaign, weekNumber, id", connSql);
+            cmdSql = new SqlCommand("select * from match where id <> 3007 and id <> 9382 order by campaign, weekNumber, id", connSql);
 
             using (SqlDataReader rReader = cmdSql.ExecuteReader())
             {
