@@ -23,6 +23,7 @@
             AlternatingRowStyle-CssClass="alt" BackColor="White" BorderColor="#DEDFDE" BorderStyle="None" BorderWidth="1px" CellPadding="4" ForeColor="Black">
             <AlternatingRowStyle CssClass="alt" BackColor="White"></AlternatingRowStyle>
             <Columns>
+                <asp:BoundField HeaderText="Name" DataField="Name" Visible="false"/>
                 <asp:HyperLinkField  HeaderText="Match" DataTextField="Match" DataNavigateUrlFormatString="http://stats.mmdl.org/index.php?view=match&matchid={0}" DataNavigateUrlFields="Match"  />                        
                 <asp:BoundField HeaderText="Game #" DataField="GameNumber" />
                 <asp:HyperLinkField HeaderText="Opposing Team" DataTextField="SquadName" DataNavigateUrlFormatString="http://stats.mmdl.org/index.php?view=team&teamid={0}" DataNavigateUrlFields="Squad" />

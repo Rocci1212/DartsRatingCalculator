@@ -49,7 +49,7 @@ namespace WebApplication1
         {
             
 
-            SqlDataAdapter adpSql = new SqlDataAdapter("exec getplayergamehistory @player, @realm", connSql);
+            SqlDataAdapter adpSql = new SqlDataAdapter("exec getplayergamehistory @player, @realm, @param1", connSql);
             adpSql.SelectCommand.Parameters.AddWithValue("@player", playerId);
             adpSql.SelectCommand.Parameters.AddWithValue("@realm", realm);
             adpSql.SelectCommand.Parameters.AddWithValue("@param1", param);
@@ -59,11 +59,16 @@ namespace WebApplication1
             grdPlayer.DataSource = dstdata;
             grdPlayer.DataBind();
 
-            lblPlayer.Text = dstdata.Rows[0]["Name"].ToString();
-            lblPlayer.NavigateUrl = String.Format(
-                "{0:F0}", "http://stats.mmdl.org/index.php?view=player&playerid=" + dstdata.Rows[0]["Player"].ToString());
-            lblRating.Text = "Rating: " + String.Format(
-                "{0:f0}", (dstdata.Rows[dstdata.Rows.Count - 1]["PostRating"]));
+            if (grdPlayer.Rows.Count > 0)
+            {
+                lblPlayer.Text = grdPlayer.Rows[0].Cells[0].Text;
+
+                lblPlayer.Text = dstdata.Rows[0]["Name"].ToString();
+                lblPlayer.NavigateUrl = String.Format(
+                    "{0:F0}", "http://stats.mmdl.org/index.php?view=player&playerid=" + dstdata.Rows[0]["Player"].ToString());
+                lblRating.Text = "Rating: " + String.Format(
+                    "{0:f0}", (dstdata.Rows[dstdata.Rows.Count - 1]["PostRating"]));
+            }
         }
     }
 }

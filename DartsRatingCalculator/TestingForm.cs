@@ -102,10 +102,11 @@ namespace DartsRatingCalculator
             Utility.FarmingFunctions.FarmStandingsPage("http://stats.mmdl.org/index.php?view=standings&seasonid=21&conferenceid=3");
             Utility.FarmingFunctions.FarmStandingsPage("http://stats.mmdl.org/index.php?view=standings&seasonid=21&conferenceid=4");
             */
+
             SqlConnection connSql = new SqlConnection(
                 Gravoc.Encryption.Encryption.Decrypt(Properties.Settings.Default.ConnectionString));
             connSql.Open();
-            
+
             SqlCommand cmdSql = new SqlCommand("select id from squad", connSql);
             /*
             using (SqlDataReader rReader = cmdSql.ExecuteReader())
@@ -116,7 +117,8 @@ namespace DartsRatingCalculator
                 }
             }
             */
-            cmdSql = new SqlCommand("select * from match where id <> 3007 and id <> 9382 order by campaign, weekNumber, id", connSql);
+            
+            cmdSql = new SqlCommand("select * from match order by campaign, weekNumber, id", connSql);
 
             using (SqlDataReader rReader = cmdSql.ExecuteReader())
             {
@@ -125,7 +127,7 @@ namespace DartsRatingCalculator
                     Utility.FarmingFunctions.FarmMatchPage(Convert.ToInt32(rReader["ID"]), Convert.ToInt32(rReader["Campaign"]));
                 }
             }
-
+            
             connSql.Close();
         }
     }
