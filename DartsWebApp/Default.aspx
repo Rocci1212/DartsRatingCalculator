@@ -17,19 +17,19 @@
         <asp:Button runat="server" ID="GoButton" Width="100" Text="Go!" OnClick="GoButton_Click" />
     </ol>
     <div class="table-responsive">
-        <asp:GridView ID="grdPlayerSearch" runat="server" AutoGenerateColumns="False" AllowSorting="False" 
+        <asp:GridView ID="grdPlayerSearch" runat="server" AutoGenerateColumns="False" AllowSorting="False"
             BorderColor="#DEDFDE" BorderStyle="None" BorderWidth="1px" CellPadding="4">
             <Columns>
-                <asp:HyperLinkField  HeaderText="Players" DataTextField="Name" DataNavigateUrlFormatString="{0}" DataNavigateUrlFields="Link"  />                        
-            </Columns>       
-        </asp:GridView>  
+                <asp:HyperLinkField HeaderText="Players" DataTextField="Name" DataNavigateUrlFormatString="{0}" DataNavigateUrlFields="Link" />
+            </Columns>
+        </asp:GridView>
     </div>
     <div class="table-responsive">
-        <asp:GridView ID="grdTeamSearch" runat="server" AutoGenerateColumns="False" AllowSorting="False" 
+        <asp:GridView ID="grdTeamSearch" runat="server" AutoGenerateColumns="False" AllowSorting="False"
             BorderColor="#DEDFDE" BorderStyle="None" BorderWidth="1px" CellPadding="4">
             <Columns>
-                <asp:HyperLinkField  HeaderText="Teams" DataTextField="Name" DataNavigateUrlFormatString="{0}" DataNavigateUrlFields="Link"  />                        
-            </Columns>       
-        </asp:GridView>  
+                <asp:HyperLinkField HeaderText="Teams" DataTextField="Name" DataNavigateUrlFormatString="{0}" DataNavigateUrlFields="Link" />
+            </Columns>
+        </asp:GridView>
     </div>
 </asp:Content>

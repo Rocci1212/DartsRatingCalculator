@@ -87,6 +87,28 @@ namespace DartsRatingCalculator
             return campaign;
         }
 
+        public static Campaign GetCampaignFromMatch(int matchId)
+        {
+            SqlConnection connSql = new SqlConnection(
+                Gravoc.Encryption.Encryption.Decrypt(Properties.Settings.Default.ConnectionString));
+            connSql.Open();
+
+            SqlCommand cmdSql = new SqlCommand("select campaign from match where id = @match", connSql);
+            cmdSql.Parameters.AddWithValue("@match", matchId);
+
+            Campaign campaign = new Campaign(-1, Season.Fall, 0, Class.SuperA, Conference.Boston, null);
+
+            using (SqlDataReader rReader = cmdSql.ExecuteReader())
+            {
+                if (rReader.Read())
+                    campaign = GetCampaign(Convert.ToInt32(rReader[0]));
+            }
+
+            connSql.Close();
+
+            return campaign;
+        }
+
         public static Campaign GetCampaignFromDesc(string campaignDesc)
         {
             int id;

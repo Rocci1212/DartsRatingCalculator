@@ -101,13 +101,27 @@ namespace DartsRatingCalculator
             Utility.FarmingFunctions.FarmStandingsPage("http://stats.mmdl.org/index.php?view=standings&seasonid=21&conferenceid=2");
             Utility.FarmingFunctions.FarmStandingsPage("http://stats.mmdl.org/index.php?view=standings&seasonid=21&conferenceid=3");
             Utility.FarmingFunctions.FarmStandingsPage("http://stats.mmdl.org/index.php?view=standings&seasonid=21&conferenceid=4");
-            */
 
+            // fall 15
+            Utility.FarmingFunctions.FarmStandingsPage("http://stats.mmdl.org/index.php?view=standings&seasonid=22&conferenceid=1");
+            Utility.FarmingFunctions.FarmStandingsPage("http://stats.mmdl.org/index.php?view=standings&seasonid=22&conferenceid=2");
+            Utility.FarmingFunctions.FarmStandingsPage("http://stats.mmdl.org/index.php?view=standings&seasonid=22&conferenceid=3");
+            Utility.FarmingFunctions.FarmStandingsPage("http://stats.mmdl.org/index.php?view=standings&seasonid=22&conferenceid=4");
+            
+            //// spring 16
+            //Utility.FarmingFunctions.FarmStandingsPage("http://stats.mmdl.org/index.php?view=standings&seasonid=23&conferenceid=1");
+            //Utility.FarmingFunctions.FarmStandingsPage("http://stats.mmdl.org/index.php?view=standings&seasonid=23&conferenceid=2");
+            //Utility.FarmingFunctions.FarmStandingsPage("http://stats.mmdl.org/index.php?view=standings&seasonid=23&conferenceid=3");
+            //Utility.FarmingFunctions.FarmStandingsPage("http://stats.mmdl.org/index.php?view=standings&seasonid=23&conferenceid=4");
+
+            */
+            
             SqlConnection connSql = new SqlConnection(
                 Gravoc.Encryption.Encryption.Decrypt(Properties.Settings.Default.ConnectionString));
             connSql.Open();
 
             SqlCommand cmdSql = new SqlCommand("select id from squad", connSql);
+
             /*
             using (SqlDataReader rReader = cmdSql.ExecuteReader())
             {
@@ -117,7 +131,7 @@ namespace DartsRatingCalculator
                 }
             }
             */
-            
+            /*
             cmdSql = new SqlCommand("select * from match order by campaign, weekNumber, id", connSql);
 
             using (SqlDataReader rReader = cmdSql.ExecuteReader())
@@ -127,8 +141,26 @@ namespace DartsRatingCalculator
                     Utility.FarmingFunctions.FarmMatchPage(Convert.ToInt32(rReader["ID"]), Convert.ToInt32(rReader["Campaign"]));
                 }
             }
-            
+            */
+
+            cmdSql = new SqlCommand("select * from gameFarm", connSql);
+            using (SqlDataReader rReader = cmdSql.ExecuteReader())
+            {
+                while (rReader.Read())
+                {
+                    Utility.FarmingFunctions.FarmGame(
+                        Convert.ToString(rReader["MatchDescription"]),
+                        Convert.ToString(rReader["SquadDescription"]),
+                        Convert.ToInt32(rReader["GameNumber"]),
+                        Convert.ToString(rReader["GameType"]),
+                        Convert.ToInt32(rReader["IsHomeWin"]),
+                        Convert.ToString(rReader["AwayPlayers"]),
+                        Convert.ToString(rReader["HomePlayers"]));
+                }
+            }
             connSql.Close();
+
+            //Utility.FarmingFunctions.FarmMatchPage(35960, 2214);
         }
     }
 }

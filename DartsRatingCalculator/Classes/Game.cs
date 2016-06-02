@@ -33,28 +33,20 @@ namespace DartsRatingCalculator
             {
                 case "301 Singles":
                     return GameType.singles301;
-                    break;
                 case "301 Doubles":
                     return GameType.doubles301;
-                    break;
                 case "501 Singles":
                     return GameType.singles501;
-                    break;
                 case "501 Doubles":
                     return GameType.doubles501;
-                    break;
                 case "601 Triples":
                     return GameType.triples601;
-                    break;
                 case "Cricket Singles":
                     return GameType.singlesCricket;
-                    break;
                 case "Cricket Doubles":
                     return GameType.doublesCricket;
-                    break;
                 default:
                     throw new Exception("Game Type not found!");
-                    break;
             }
         }
 

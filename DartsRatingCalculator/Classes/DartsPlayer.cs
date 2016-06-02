@@ -28,7 +28,7 @@ namespace DartsRatingCalculator
             Id = playerId;
         }
 
-        public static int CreateDummyPlayer(string name, int squadId)
+        public static int CreateDummyPlayer(string name, int squadId, int matchId)
         {
             int i = -1;
             SqlConnection connSql = new SqlConnection(
@@ -39,6 +39,7 @@ namespace DartsRatingCalculator
             cmdSql.CommandType = System.Data.CommandType.StoredProcedure;
             cmdSql.Parameters.AddWithValue("@PlayerName", name);
             cmdSql.Parameters.AddWithValue("@SquadId", squadId);
+            cmdSql.Parameters.AddWithValue("@MatchId", matchId);
 
             using (SqlDataReader rReader = cmdSql.ExecuteReader())
             {

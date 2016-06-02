@@ -48,5 +48,35 @@ namespace DartsRatingCalculator
 
             connSql.Close();
         }
+
+        public void MarkBadMatch()
+        {
+            SqlConnection connSql = new SqlConnection(
+                Gravoc.Encryption.Encryption.Decrypt(Properties.Settings.Default.ConnectionString));
+            connSql.Open();
+
+            SqlCommand cmdSql = new SqlCommand("update match set ErrorCode = -1 where id = @MatchId", connSql);
+            cmdSql.Parameters.AddWithValue("@MatchId", MatchId);
+
+            cmdSql.ExecuteNonQuery();
+
+            connSql.Close();
+        }
+
+        public bool IsBadMatch()
+        {
+            SqlConnection connSql = new SqlConnection(
+                Gravoc.Encryption.Encryption.Decrypt(Properties.Settings.Default.ConnectionString));
+            connSql.Open();
+
+            SqlCommand cmdSql = new SqlCommand("select * from match where errorCode <> 0 and id = @MatchId", connSql);
+            cmdSql.Parameters.AddWithValue("@MatchId", MatchId);
+
+            cmdSql.ExecuteNonQuery();
+
+            connSql.Close();
+
+            return false;
+        }
     }
 }
